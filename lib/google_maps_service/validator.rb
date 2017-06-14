@@ -35,5 +35,19 @@ module GoogleMapsService
       end
       avoid
     end
+
+    # Validate traffic model. The valid values of traffic are `best_guess`, `pessimistic` or `optimistic`.
+    #
+    # @param [String, Symbol] traffic_model Traffic model to be validated
+    #
+    # @raise ArgumentError The traffic model is invalid.
+    #
+    # @return [String] Valid traffic model
+    def traffic_model(traffic_model)
+      unless [:best_guess, :pessimistic, :optimistic].include?(traffic_model.to_sym)
+        raise ArgumentError, 'Invalid traffic model.'
+      end
+      traffic_model
+    end
   end
 end

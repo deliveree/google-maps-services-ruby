@@ -33,9 +33,28 @@ describe GoogleMapsService::Validator do
       end
     end
 
-    context 'with invalid travel mode' do
+    context 'with invalid route restriction' do
       it 'should raise ArgumentError' do
         expect { GoogleMapsService::Validator.avoid('people') }.to raise_error ArgumentError
+      end
+    end
+  end
+
+  describe '.traffic_model' do
+    context 'with valid traffic model' do
+      it 'should return the traffic model' do
+        [:best_guess, :pessimistic, :optimistic].each do |mode|
+          expect(GoogleMapsService::Validator.traffic_model(mode)).to eq(mode)
+        end
+        ['best_guess', 'pessimistic', 'optimistic'].each do |mode|
+          expect(GoogleMapsService::Validator.traffic_model(mode)).to eq(mode)
+        end
+      end
+    end
+
+    context 'with invalid traffic model' do
+      it 'should raise ArgumentError' do
+        expect { GoogleMapsService::Validator.traffic_model('nonexistent') }.to raise_error ArgumentError
       end
     end
   end

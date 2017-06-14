@@ -146,4 +146,18 @@ describe GoogleMapsService::Apis::Directions do
       expect(a_request(:get, 'https://maps.googleapis.com/maps/api/directions/json?origin=Sydney+Town+Hall&destination=Parramatta+Town+Hall&alternatives=true&key=%s' % api_key)).to have_been_made
     end
   end
+
+  context 'traffic_model parameter' do
+    it 'should call Google Maps Web Service' do
+      now = Time.now
+      client.directions('Sydney Town Hall', 'Parramatta Town Hall', traffic_model: 'pessimistic', departure_time: now)
+      expect(a_request(:get, 'https://maps.googleapis.com/maps/api/directions/json?origin=Sydney+Town+Hall&destination=Parramatta+Town+Hall&traffic_model=pessimistic&departure_time=%d&key=%s' % [now.to_i, api_key])).to have_been_made
+    end
+
+    it 'should error if departure_time not provided' do
+      expect {
+        client.directions('Sydney Town Hall', 'Parramatta Town Hall', traffic_model: 'pessimistic')
+      }.to raise_error ArgumentError
+    end
+  end
 end
