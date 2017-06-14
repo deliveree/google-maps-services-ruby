@@ -87,4 +87,22 @@ describe GoogleMapsService::Apis::DistanceMatrix do
       }.to raise_error ArgumentError
     end
   end
+
+  context 'traffic_model parameter' do
+    it 'should call Google Maps Web Service' do
+      origins = ["Vancouver BC", "Seattle"]
+      destinations = ["San Francisco", "Victoria BC"]
+      now = Time.now
+      client.distance_matrix(origins, destinations, traffic_model: 'pessimistic', departure_time: now)
+      expect(a_request(:get, 'https://maps.googleapis.com/maps/api/distancematrix/json?origins=Vancouver+BC%%7CSeattle&destinations=San+Francisco%%7CVictoria+BC&traffic_model=pessimistic&departure_time=%d&key=%s' % [now.to_i, api_key])).to have_been_made
+    end
+
+    it 'should error if departure_time not provided' do
+      expect {
+        origins = ["Vancouver BC", "Seattle"]
+        destinations = ["San Francisco", "Victoria BC"]
+        client.distance_matrix(origins, destinations, traffic_model: 'pessimistic')
+      }.to raise_error ArgumentError
+    end
+  end
 end

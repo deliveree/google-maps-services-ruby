@@ -52,13 +52,19 @@ module GoogleMapsService::Apis
     #     `rail` is equivalent to `["train", "tram", "subway"]`.
     # @param [String] transit_routing_preference Specifies preferences for transit
     #     requests. Valid values are `less_walking` or `fewer_transfers`.
+    # @param [String] traffic_model Specifies the assumptions to use when calculating time in traffic.
+    #     This setting affects the value returned in the duration_in_traffic field in the response,
+    #     which contains the predicted time in traffic based on historical averages. The traffic_model
+    #     parameter may only be specified for driving directions where the request includes a
+    #     `departure_time`, and only if the request includes an API key or a Google Maps APIs Premium
+    #     Plan client ID. Valid values are `best_guess` (default), `pessimistic` or `optimistic`.
     #
     # @return [Hash] Matrix of distances. Results are returned in rows, each row
     #     containing one origin paired with each destination.
     def distance_matrix(origins, destinations,
         mode: nil, language: nil, avoid: nil, units: nil,
         departure_time: nil, arrival_time: nil, transit_mode: nil,
-        transit_routing_preference: nil)
+        transit_routing_preference: nil, traffic_model: nil)
       params = {
         origins: GoogleMapsService::Convert.waypoints(origins),
         destinations: GoogleMapsService::Convert.waypoints(destinations)
@@ -78,6 +84,11 @@ module GoogleMapsService::Apis
 
       params[:transit_mode] = GoogleMapsService::Convert.join_list('|', transit_mode) if transit_mode
       params[:transit_routing_preference] = transit_routing_preference if transit_routing_preference
+      params[:traffic_model] = GoogleMapsService::Validator.traffic_model(traffic_model) if traffic_model
+
+      if traffic_model and not departure_time
+        raise ArgumentError, 'Must specify departure_time if specifying traffic_model'
+      end
 
       return get('/maps/api/distancematrix/json', params)
     end
