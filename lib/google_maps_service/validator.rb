@@ -24,13 +24,18 @@ module GoogleMapsService
 
     # Validate route restriction. The valid value of route restriction are `tolls`, `highways` or `ferries`.
     #
-    # @param [String, Symbol] avoid Route restriction to be validated.
+    # @param [String] avoid Route restriction to be validated.
+    #
+    # Format input avoid: '[key]|[key]|[key]' 
+    #
+    # Ex: 'tolls|highways|ferries'
     #
     # @raise ArgumentError The route restriction is invalid.
     #
     # @return [String] Valid route restriction.
     def avoid(avoid)
-      unless [:tolls, :highways, :ferries].include?(avoid.to_sym)
+      array_keys = avoid.split('|').map{|key| key.to_sym}
+      unless ([:tolls, :highways, :ferries] & array_keys).size == array_keys.size
         raise ArgumentError, 'Invalid route restriction.'
       end
       avoid
