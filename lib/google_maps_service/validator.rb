@@ -26,7 +26,9 @@ module GoogleMapsService
     #
     # @param [String] avoid Route restriction to be validated.
     #
-    # Format input avoid: '[key]|[key]|[key]' 
+    # Format input avoid: '[key][character][key][character][key]' 
+    #
+    # Characters which between the keys can be , . ' or | 
     #
     # Ex: 'tolls|highways|ferries'
     #
@@ -34,11 +36,11 @@ module GoogleMapsService
     #
     # @return [String] Valid route restriction.
     def avoid(avoid)
-      array_keys = avoid.split('|').map{|key| key.to_sym}
+      array_keys = avoid.split(/[,.'|]/).map{|key| key.strip.to_sym}
       unless ([:tolls, :highways, :ferries] & array_keys).size == array_keys.size
         raise ArgumentError, 'Invalid route restriction.'
       end
-      avoid
+      array_keys.join('|')
     end
 
     # Validate traffic model. The valid values of traffic are `best_guess`, `pessimistic` or `optimistic`.
